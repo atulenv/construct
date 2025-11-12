@@ -1,233 +1,64 @@
-
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const mapStyle = [
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f5f5f5"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#f5f5f5"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#bdbdbd"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#eeeeee"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#e5e5e5"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#ffffff"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#757575"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dadada"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#616161"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#e5e5e5"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#eeeeee"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#c9c9c9"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9e9e9e"
-      }
-    ]
-  }
-];
+import { Theme } from '../../constants/theme';
+import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
 
 const SOSScreen = () => {
-  const [alertSent, setAlertSent] = React.useState(false);
-  const pulseAnim = new Animated.Value(1);
+  const [isSosActive, setIsSosActive] = useState(false);
+  const [countdown, setCountdown] = useState(10);
 
-  const handleSOS = () => {
-    setAlertSent(true);
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.2,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+  const userLocation = { latitude: 37.78825, longitude: -122.4324 };
+  const safeZoneLocation = { latitude: 37.78, longitude: -122.45 };
+
+  useEffect(() => {
+    let timer;
+    if (isSosActive && countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else if (countdown === 0) {
+      Alert.alert("Help is on the way!", "Authorities have been notified and are en route to your location.");
+    }
+    return () => clearTimeout(timer);
+  }, [isSosActive, countdown]);
+
+  const handleSosPress = () => {
+    setIsSosActive(true);
   };
 
   return (
     <View style={styles.container}>
       <MapView
+        provider={PROVIDER_DEFAULT}
         style={styles.map}
-        customMapStyle={mapStyle}
         initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
+          ...userLocation,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
       >
-        <Marker
-          coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
-          title="Your Location"
-        />
+        <Marker coordinate={userLocation} title="Your Location" pinColor="red" />
+        <Marker coordinate={safeZoneLocation} title="Safe Zone" pinColor="green" />
         <Polyline
-          coordinates={[
-            { latitude: 37.78825, longitude: -122.4324 },
-            { latitude: 37.78925, longitude: -122.4344 },
-          ]}
-          strokeColor="#007bff"
-          strokeWidth={4}
+          coordinates={[userLocation, safeZoneLocation]}
+          strokeColor={Theme.colors.primary}
+          strokeWidth={3}
         />
       </MapView>
-
-      <View style={styles.content}>
-        {!alertSent ? (
-          <TouchableOpacity style={styles.sosButton} onPress={handleSOS}>
-            <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-              <Text style={styles.sosButtonText}>CALL EMERGENCY</Text>
-            </Animated.View>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.alertMessage}>
-            <Text style={styles.alertText}>Alerting authorities… Help is on the way!</Text>
-            <View style={styles.timer}>
-              <Text style={styles.timerText}>5:00</Text>
-            </View>
-          </View>
-        )}
+      {!isSosActive ? (
+        <TouchableOpacity style={styles.sosButton} onPress={handleSosPress}>
+          <Ionicons name="alert-circle" size={80} color="white" />
+          <Text style={styles.sosButtonText}>CALL EMERGENCY</Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.sosActiveContainer}>
+          <Text style={styles.sosStatusText}>Alerting Authorities...</Text>
+          <Text style={styles.countdownText}>{countdown}</Text>
+          <Text style={styles.sosHelpText}>Help is on the way!</Text>
+        </View>
+      )}
+      <View style={styles.emergencyContact}>
+        <Text style={styles.emergencyContactTitle}>Emergency Contact</Text>
+        <Text style={styles.emergencyContactName}>Jane Doe: 123-456-7890</Text>
       </View>
     </View>
   );
@@ -236,53 +67,64 @@ const SOSScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Theme.colors.white,
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingBottom: 50,
+    height: '60%',
   },
   sosButton: {
+    position: 'absolute',
+    top: '70%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#28a745',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
+    ...Theme.shadows.lg,
   },
   sosButtonText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
+    color: 'white',
+    fontFamily: Theme.font.family.sansBold,
+    fontSize: Theme.font.size.lg,
+    marginTop: 10,
   },
-  alertMessage: {
+  sosActiveContainer: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  sosStatusText: {
+    fontSize: Theme.font.size.xl,
+    fontFamily: Theme.font.family.sansBold,
+    color: 'red',
+  },
+  countdownText: {
+    fontSize: 60,
+    fontFamily: Theme.font.family.sansBold,
+    marginVertical: 20,
+  },
+  sosHelpText: {
+    fontSize: Theme.font.size.lg,
+    fontFamily: Theme.font.family.sans,
+    color: Theme.colors.darkGray,
+  },
+  emergencyContact: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    backgroundColor: Theme.colors.lightGray,
+    padding: 20,
     alignItems: 'center',
   },
-  alertText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#343a40',
-    marginBottom: 20,
+  emergencyContactTitle: {
+    fontSize: Theme.font.size.md,
+    fontFamily: Theme.font.family.sansBold,
+    marginBottom: 5,
   },
-  timer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    padding: 15,
-    borderRadius: 10,
-  },
-  timerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#343a40',
+  emergencyContactName: {
+    fontSize: Theme.font.size.md,
+    fontFamily: Theme.font.family.sans,
   },
 });
 

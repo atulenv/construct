@@ -1,119 +1,93 @@
-
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView } from 'react-native';
+import { Theme } from '../../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 
-const Settings = () => {
-  const [dataSharing, setDataSharing] = React.useState(false);
-  const [theme, setTheme] = React.useState('light');
-  const fadeAnim = new Animated.Value(0);
-
-  React.useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+const SettingsScreen = () => {
+  const [isNotificationsEnabled, setIsNotificationsEnabled] = React.useState(true);
+  const [isLocationSharingEnabled, setIsLocationSharingEnabled] = React.useState(true);
+  const [isDarkModeEnabled, setIsDarkModeEnabled] = React.useState(false);
 
   return (
-    <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
-      <ScrollView style={styles.container}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Privacy Settings</Text>
-          <View style={styles.setting}>
-            <Text style={styles.settingText}>Enable Data Sharing</Text>
-            <Switch
-              value={dataSharing}
-              onValueChange={setDataSharing}
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={dataSharing ? '#007bff' : '#f4f3f4'}
-            />
-          </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Privacy</Text>
+        <View style={styles.item}>
+          <Text style={styles.itemText}>Share Location</Text>
+          <Switch
+            trackColor={{ false: Theme.colors.lightGray, true: Theme.colors.primary }}
+            thumbColor={isLocationSharingEnabled ? Theme.colors.white : Theme.colors.lightGray}
+            onValueChange={() => setIsLocationSharingEnabled(previousState => !previousState)}
+            value={isLocationSharingEnabled}
+          />
         </View>
+      </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>App Theme</Text>
-          <View style={styles.themeSwitch}>
-            <TouchableOpacity
-              style={[styles.themeButton, theme === 'light' && styles.activeTheme]}
-              onPress={() => setTheme('light')}
-            >
-              <Ionicons name="sunny-outline" size={24} color={theme === 'light' ? '#fff' : '#000'} />
-              <Text style={[styles.themeButtonText, theme === 'light' && styles.activeThemeText]}>
-                Light
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.themeButton, theme === 'dark' && styles.activeTheme]}
-              onPress={() => setTheme('dark')}
-            >
-              <Ionicons name="moon-outline" size={24} color={theme === 'dark' ? '#fff' : '#000'} />
-              <Text style={[styles.themeButtonText, theme === 'dark' && styles.activeThemeText]}>
-                Dark
-              </Text>
-            </TouchableOpacity>
-          </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Notifications</Text>
+        <View style={styles.item}>
+          <Text style={styles.itemText}>Emergency Alerts</Text>
+          <Switch
+            trackColor={{ false: Theme.colors.lightGray, true: Theme.colors.primary }}
+            thumbColor={isNotificationsEnabled ? Theme.colors.white : Theme.colors.lightGray}
+            onValueChange={() => setIsNotificationsEnabled(previousState => !previousState)}
+            value={isNotificationsEnabled}
+          />
         </View>
-      </ScrollView>
-    </Animated.View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Display</Text>
+        <View style={styles.item}>
+          <Text style={styles.itemText}>Dark Mode</Text>
+          <Switch
+            trackColor={{ false: Theme.colors.lightGray, true: Theme.colors.primary }}
+            thumbColor={isDarkModeEnabled ? Theme.colors.white : Theme.colors.lightGray}
+            onValueChange={() => setIsDarkModeEnabled(previousState => !previousState)}
+            value={isDarkModeEnabled}
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Language</Text>
+        <TouchableOpacity style={styles.item}>
+          <Text style={styles.itemText}>English</Text>
+          <Ionicons name="chevron-forward" size={24} color={Theme.colors.darkGray} />
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f2f5',
+    backgroundColor: Theme.colors.white,
   },
   section: {
-    backgroundColor: '#fff',
-    marginHorizontal: 15,
-    marginVertical: 10,
-    padding: 20,
-    borderRadius: 10,
+    marginTop: Theme.spacing.lg,
+    paddingHorizontal: Theme.spacing.lg,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
+    fontSize: Theme.font.size.lg,
+    fontFamily: Theme.font.family.sansBold,
+    color: Theme.colors.primary,
+    marginBottom: Theme.spacing.md,
   },
-  setting: {
+  item: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: Theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.lightGray,
   },
-  settingText: {
-    fontSize: 16,
-    color: '#555',
-  },
-  themeSwitch: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#e9ecef',
-    borderRadius: 10,
-    padding: 5,
-  },
-  themeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  activeTheme: {
-    backgroundColor: '#007bff',
-  },
-  themeButtonText: {
-    marginLeft: 10,
-    fontSize: 16,
-    color: '#000',
-  },
-  activeThemeText: {
-    color: '#fff',
+  itemText: {
+    fontSize: Theme.font.size.md,
+    fontFamily: Theme.font.family.sans,
+    color: Theme.colors.darkGray,
   },
 });
 
-export default Settings;
+export default SettingsScreen;
