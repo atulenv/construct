@@ -109,3 +109,9 @@ export const Theme = {
   radius: BORDER_RADIUS,
   shadows: SHADOWS,
 };
+
+// Provide a light/dark colors object for legacy helpers that expect Colors.light / Colors.dark
+export const Colors = {
+  light: COLORS,
+  dark: COLORS,
+};

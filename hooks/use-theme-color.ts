@@ -3,19 +3,22 @@
  * https://docs.expo.dev/guides/color-schemes/
  */
 
-import { Colors } from '@/constants/theme';
+import { Theme } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+// A permissive helper that returns a color string for the current color scheme.
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  colorName: string
 ) {
   const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
+  const colorFromProps = props[theme as 'light' | 'dark'];
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    // Fallback: try to read from Theme.colors, otherwise return a sensible default.
+    // @ts-ignore - permissive lookup
+    return Theme.colors[colorName] ?? Theme.colors.lightGray;
   }
 }

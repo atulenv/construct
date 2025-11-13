@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Theme } from '../../constants/theme';
+import React, { useEffect, useState } from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_DEFAULT } from 'react-native-maps';
+import { Theme } from '../../constants/theme';
 
 const SOSScreen = () => {
   const [isSosActive, setIsSosActive] = useState(false);
@@ -12,13 +12,15 @@ const SOSScreen = () => {
   const safeZoneLocation = { latitude: 37.78, longitude: -122.45 };
 
   useEffect(() => {
-    let timer;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     if (isSosActive && countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     } else if (countdown === 0) {
-      Alert.alert("Help is on the way!", "Authorities have been notified and are en route to your location.");
+      Alert.alert('Help is on the way!', 'Authorities have been notified and are en route to your location.');
     }
-    return () => clearTimeout(timer);
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [isSosActive, countdown]);
 
   const handleSosPress = () => {

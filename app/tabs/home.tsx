@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Animated, Easing } from 'react-native';
-import MapView, { Marker, Circle, PROVIDER_DEFAULT } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import MapView, { Circle, Marker, PROVIDER_DEFAULT } from 'react-native-maps';
+import SOSButton from '../../components/ui/SOSButton';
+import SafetyCard from '../../components/ui/SafetyCard';
 import { Theme } from '../../constants/theme';
 
 const HomeScreen = () => {
   const router = useRouter();
-  const sosButtonScale = useState(new Animated.Value(1))[0];
+  // SOS button handled by SOSButton component (animated internally)
 
   const userLocation = {
     latitude: 37.78825,
@@ -39,7 +41,7 @@ const HomeScreen = () => {
     icon: 'cloudy-outline',
   };
 
-  const getRiskColor = (risk) => {
+  const getRiskColor = (risk: string) => {
     if (risk === 'High') return Theme.colors.riskHigh;
     if (risk === 'Medium') return Theme.colors.riskMedium;
     return Theme.colors.riskLow;
@@ -49,20 +51,13 @@ const HomeScreen = () => {
     router.push('/screens/SOSScreen');
   };
 
-  const animateSosButton = (toValue) => {
-    Animated.timing(sosButtonScale, {
-      toValue,
-      duration: 150,
-      easing: Easing.inOut(Easing.ease),
-      useNativeDriver: true,
-    }).start();
-  };
+  // animateSosButton removed; SOSButton handles its own animation
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.weatherContainer}>
-          <Ionicons name={weatherData.icon} size={24} color={Theme.colors.darkGray} />
+          <Ionicons name={weatherData.icon as any} size={24} color={Theme.colors.darkGray} />
           <Text style={styles.weatherText}>{weatherData.temperature}, {weatherData.condition}</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.alertsBar}>
@@ -95,24 +90,13 @@ const HomeScreen = () => {
       <ScrollView style={styles.safetyZonesContainer}>
         <Text style={styles.sectionTitle}>Nearby Safety Zones</Text>
         {nearbySafetyZones.map(zone => (
-          <View key={zone.id} style={styles.safetyZoneItem}>
-            <Ionicons name="location-outline" size={20} color={Theme.colors.darkGray} />
-            <Text style={styles.safetyZoneName}>{zone.name}</Text>
-            <Text style={styles.safetyZoneDistance}>{zone.distance}</Text>
-          </View>
+          <SafetyCard key={zone.id} title={zone.name} subtitle={zone.type} distance={zone.distance} />
         ))}
       </ScrollView>
 
-      <TouchableOpacity
-        style={styles.sosButtonContainer}
-        onPress={handleSos}
-        onPressIn={() => animateSosButton(1.1)}
-        onPressOut={() => animateSosButton(1)}
-      >
-        <Animated.View style={[styles.sosButton, { transform: [{ scale: sosButtonScale }] }]}>
-          <Ionicons name="alert-circle-outline" size={40} color={Theme.colors.white} />
-        </Animated.View>
-      </TouchableOpacity>
+      <View style={styles.sosButtonContainer}>
+        <SOSButton onPress={handleSos} />
+      </View>
     </View>
   );
 };

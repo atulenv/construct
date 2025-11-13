@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import { Theme } from '../../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Theme } from '../../constants/theme';
 
 const emergencyServices = [
   { id: '1', name: 'Police', icon: 'shield-outline', phone: '100' },
@@ -11,7 +11,7 @@ const emergencyServices = [
 ];
 
 const EmergencyScreen = () => {
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity style={styles.serviceItem}>
       <Ionicons name={item.icon} size={32} color={Theme.colors.primary} />
       <Text style={styles.serviceName}>{item.name}</Text>

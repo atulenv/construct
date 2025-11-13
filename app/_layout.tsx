@@ -1,8 +1,8 @@
-import React from 'react';
-import { Stack } from 'expo-router';
-import { StateProvider } from '../src/components/State';
 import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import React from 'react';
 import { Theme } from '../constants/theme';
+import { StateProvider } from '../src/components/State';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -25,6 +25,8 @@ export default function RootLayout() {
         <Stack.Screen name="screens/emergency" options={{ title: 'Emergency Services', headerStyle: { backgroundColor: Theme.colors.lightGray }, headerTitleStyle: { fontFamily: Theme.font.family.sansBold } }} />
         <Stack.Screen name="screens/help" options={{ title: 'Help', headerStyle: { backgroundColor: Theme.colors.lightGray }, headerTitleStyle: { fontFamily: Theme.font.family.sansBold } }} />
         <Stack.Screen name="screens/map" options={{ title: 'Map', headerStyle: { backgroundColor: Theme.colors.lightGray }, headerTitleStyle: { fontFamily: Theme.font.family.sansBold } }} />
+  <Stack.Screen name="screens/TravelRoutes" options={{ title: 'Travel Routes', headerStyle: { backgroundColor: Theme.colors.lightGray }, headerTitleStyle: { fontFamily: Theme.font.family.sansBold } }} />
+  <Stack.Screen name="screens/Reports" options={{ title: 'Reports', headerStyle: { backgroundColor: Theme.colors.lightGray }, headerTitleStyle: { fontFamily: Theme.font.family.sansBold } }} />
         <Stack.Screen name="tabs" options={{ headerShown: false }} />
       </Stack>
     </StateProvider>

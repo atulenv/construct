@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Theme } from '../../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Theme } from '../../constants/theme';
 
 const HelpScreen = () => {
   return (
@@ -13,13 +13,13 @@ const HelpScreen = () => {
         <View style={styles.faqItem}>
           <Text style={styles.faqQuestion}>How do I add an emergency contact?</Text>
           <Text style={styles.faqAnswer}>
-            Go to your Profile, tap on 'Emergency Contacts', and then 'Add Contact'.
+            Go to your Profile, tap on &apos;Emergency Contacts&apos;, and then &apos;Add Contact&apos;.
           </Text>
         </View>
         <View style={styles.faqItem}>
           <Text style={styles.faqQuestion}>How do I report an unsafe zone?</Text>
           <Text style={styles.faqAnswer}>
-            From the home screen, tap on the 'Report' button and fill in the details of the unsafe zone.
+            From the home screen, tap on the &apos;Report&apos; button and fill in the details of the unsafe zone.
           </Text>
         </View>
       </View>

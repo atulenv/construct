@@ -1,10 +1,17 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 
-const StateContext = createContext(undefined);
+type StateShape = Record<string, unknown>;
 
-export const StateProvider = ({ children }) => {
-  const [state, setState] = useState({});
+type StateContextType = {
+  state: StateShape;
+  setState: React.Dispatch<React.SetStateAction<StateShape>>;
+} | undefined;
+
+const StateContext = createContext<StateContextType>(undefined);
+
+export const StateProvider = ({ children }: { children: ReactNode }) => {
+  const [state, setState] = useState<StateShape>({});
 
   return (
     <StateContext.Provider value={{ state, setState }}>

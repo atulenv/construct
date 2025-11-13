@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Theme } from '../constants/theme';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import * as Progress from 'react-native-progress';
+import { Theme } from '../constants/theme';
 
 const SplashScreen = () => {
   const router = useRouter();
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const progressAnim = useRef(new Animated.Value(0)).current;
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     // Pulse animation for logo
@@ -29,13 +29,17 @@ const SplashScreen = () => {
       ])
     ).start();
 
-    // Progress bar animation
-    Animated.timing(progressAnim, {
-      toValue: 1,
-      duration: 2500, // Match splash screen duration
-      easing: Easing.linear,
-      useNativeDriver: false,
-    }).start();
+    // Progress bar animation (numeric state)
+    let start: number | null = null;
+    const duration = 2500;
+    const step = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const pct = Math.min(1, elapsed / duration);
+      setProgress(pct);
+      if (elapsed < duration) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
 
     // Simulate loading and navigate to the permissions screen
     const timer = setTimeout(() => {
@@ -43,7 +47,7 @@ const SplashScreen = () => {
     }, 3000); // 3-second splash screen
 
     return () => clearTimeout(timer);
-  }, [router, pulseAnim, progressAnim]);
+  }, [router, pulseAnim]);
 
   return (
     <LinearGradient
@@ -58,7 +62,7 @@ const SplashScreen = () => {
       </View>
       <View style={styles.footer}>
         <Progress.Bar
-          progress={progressAnim}
+          progress={progress}
           width={200}
           color={Theme.colors.primary}
           unfilledColor={Theme.colors.mediumGray}
